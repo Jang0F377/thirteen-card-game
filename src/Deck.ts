@@ -1,13 +1,12 @@
 import {Ora} from 'ora';
 import {Card} from './Card';
-import {Player} from './Player';
 import {cardSuits, cardValues} from './constants/cards.constants';
 import {
   CardInterface,
   DeckCreationOptions,
-  PlayerInterface,
+  DeckObject,
 } from './types/deck.types';
-import {spinnerLog} from './utils/log-utils';
+import {spinnerLog} from './utils/log.utils';
 
 /**
  * @class Deck Object - handles the creating of the cards
@@ -15,28 +14,26 @@ import {spinnerLog} from './utils/log-utils';
  * the cards
  **/
 export class Deck {
-  private timesShuffled: number;
-  private useJokers: boolean;
-  private jokerCount: number;
+  timesShuffled: number;
+  useJokers: boolean;
+  jokerCount: number;
   private cardValues: Record<string, string>;
   private cardSuits: Record<string, string>;
-  private deckCount: number;
-  private deck: CardInterface[];
-  private playersCount: number;
-  private players: PlayerInterface[] = [];
-  private player: Player;
+  deckCount: number;
+  deck: CardInterface[];
+  playersCount: number;
   private card: Card;
   opts: any;
 
-  constructor(options: DeckCreationOptions, player: Player, card: Card) {
+  constructor(options: DeckCreationOptions, card: Card) {
     if (!options.useJokers) delete options.jokerCount;
 
     const defaults: DeckCreationOptions = {
       timesShuffled: 5,
       useJokers: false,
-      jokerCount: 2,
+      jokerCount: undefined,
       deckCount: 1,
-      players: 4,
+      playersCount: 4,
     };
 
     this.opts = Object.assign({}, defaults, options);
@@ -46,19 +43,18 @@ export class Deck {
     this.deckCount = this.opts.deckCount!;
     this.cardValues = cardValues;
     this.cardSuits = cardSuits;
-    this.playersCount = this.opts.players!;
+    this.playersCount = this.opts.playersCount!;
 
-    this.player = player;
     this.card = card;
   }
 
   /**
    * Initialize and shuffle a deck,
-   * and pass out the cards.
+   * and return the DeckObject
    *
-   * @return array The PlayerInterface object
+   * @return object The DeckObject object
    */
-  init(): PlayerInterface[] {
+  init(): DeckObject {
     let initSpinner: Ora;
     initSpinner = spinnerLog({
       spinnerColor: 'blue',
@@ -66,33 +62,30 @@ export class Deck {
       spinnerType: 'binary',
     });
     initSpinner.start();
+
     // Create the deck
     this.deck = this.createDeck(this.card);
+
     setTimeout(() => {
       initSpinner.succeed('Deck Initialized.');
-    }, 1250);
+    }, 850);
 
-    // Shuffle the deck
     setTimeout(() => {
       initSpinner = spinnerLog({
         spinnerType: 'pong',
         spinnerColor: 'cyan',
         spinnerMessage: `Shuffling deck ${this.timesShuffled} times...`,
       }).start();
-    }, 2500);
+    }, 1250);
+
+    // Shuffle the deck
     this.shuffleDeck(this.timesShuffled, this.deck);
 
     setTimeout(() => {
       initSpinner.succeed("Done! Let's deal!");
-    }, 4500);
+    }, 2500);
 
-    // Instantiate players
-    this.initPlayers();
-
-    // Pass out cards
-    this.drawHands(this.deck);
-
-    return this.players;
+    return {deck: this.deck, config: this.opts};
   }
 
   createDeck(card: Card): CardInterface[] {
@@ -125,13 +118,11 @@ export class Deck {
 
     if (!n) n = 5;
 
-    var l = deck.length,
+    let l = deck.length,
       r,
-      j,
-      tmp,
-      i;
-    for (i = 0; i < n; i++) {
-      for (j = 0; j < l; j++) {
+      tmp;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < l; j++) {
         r = Math.floor(Math.random() * l);
         tmp = deck[j];
         deck[j] = deck[r];
@@ -140,27 +131,5 @@ export class Deck {
     }
 
     return deck;
-  }
-
-  private initPlayers() {
-    let playerToPush: PlayerInterface;
-    for (let x = 0; x < this.playersCount; x++) {
-      playerToPush = this.player.init(x);
-      this.players.push(playerToPush);
-    }
-  }
-
-  public drawHands(deck: CardInterface[]) {
-    let cardCount = this.deckCount * 52;
-    const cardsPerPlayer = cardCount / this.playersCount;
-    for (let x = 0; x <= cardsPerPlayer - 1; x++) {
-      this.players.forEach(function (player, _idx, _arr) {
-        player.hand.push(deck.shift()!);
-      });
-    }
-  }
-
-  public getPlayers(): PlayerInterface[] {
-    return this.players;
   }
 }

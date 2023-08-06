@@ -1,9 +1,9 @@
 export interface DeckCreationOptions {
   timesShuffled?: number;
   useJokers?: boolean;
-  jokerCount?: number; // defaults to 2, null if useJokers is false.
+  jokerCount?: number; // defaults to 2, undefined if useJokers is false.
   deckCount?: number;
-  players?: number;
+  playersCount?: number;
 }
 
 export interface CardInterface {
@@ -11,10 +11,16 @@ export interface CardInterface {
   valueString: string;
   suit: string;
   suitString: string;
+  fullName: string;
   cardUrl?: string;
 }
 
 export interface PlayerInterface {
   player: number;
   hand: CardInterface[];
+}
+
+export interface DeckObject {
+  deck: CardInterface[];
+  config: DeckCreationOptions;
 }
