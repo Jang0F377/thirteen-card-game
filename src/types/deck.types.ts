@@ -1,9 +1,7 @@
 export interface DeckCreationOptions {
   timesShuffled?: number;
   useJokers?: boolean;
-  jokerCount?: number; // defaults to 2, doesnt matter if useJokers is false.
-  cardValues?: Record<string, string>;
-  cardSuits?: Record<string, string>;
+  jokerCount?: number; // defaults to 2, null if useJokers is false.
   deckCount?: number;
   players?: number;
 }

@@ -1,14 +1,13 @@
+import {cardSuits, cardValues} from './constants/cards.constants';
 import {CardInterface} from './types/deck.types';
 
 export class Card {
-  constructor(
-    private cardSuits: Record<string, string>,
-    private cardValues: Record<string, string>,
-  ) {}
+  private cardSuits: Record<string, string> = cardSuits;
+  private cardValues: Record<string, string> = cardValues;
 
   properName() {}
 
-  async createCard(suit: string, value: string): Promise<CardInterface> {
+  createCard(suit: string, value: string): CardInterface {
     let createdCard: CardInterface = {
       suit,
       value,

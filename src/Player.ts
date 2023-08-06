@@ -1,7 +1,7 @@
 import {PlayerInterface} from './types/deck.types';
 
 export class Player {
-  async init(id: number): Promise<PlayerInterface> {
+  init(id: number): PlayerInterface {
     const newPlayer: PlayerInterface = {
       hand: [],
       player: id,
