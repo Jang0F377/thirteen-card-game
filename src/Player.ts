@@ -1,11 +1,11 @@
-import {PlayerInterface} from './types/deck.types';
+import {PlayerObject} from './types/deck.types';
 
 /**
  * @class Player Class - handles the creating of the players
  **/
 export class Player {
-  init(id: number): PlayerInterface {
-    const newPlayer: PlayerInterface = {
+  init(id: number): PlayerObject {
+    const newPlayer: PlayerObject = {
       hand: [],
       player: id,
     };
@@ -24,9 +24,9 @@ export class Player {
    */
   public initPlayers(
     playersCount: number,
-    players: PlayerInterface[],
-  ): PlayerInterface[] {
-    let playerToPush: PlayerInterface;
+    players: PlayerObject[],
+  ): PlayerObject[] {
+    let playerToPush: PlayerObject;
     for (let x = 0; x < playersCount; x++) {
       playerToPush = this.init(x);
       players.push(playerToPush);

@@ -1,11 +1,7 @@
 import {Ora} from 'ora';
 import {Card} from './Card';
 import {cardSuits, cardValues} from './constants/cards.constants';
-import {
-  CardInterface,
-  DeckCreationOptions,
-  DeckObject,
-} from './types/deck.types';
+import {CardObject, DeckCreationOptions, DeckObject} from './types/deck.types';
 import {spinnerLog} from './utils/log.utils';
 
 /**
@@ -20,7 +16,7 @@ export class Deck {
   private cardValues: Record<string, string>;
   private cardSuits: Record<string, string>;
   deckCount: number;
-  deck: CardInterface[];
+  deck: CardObject[];
   playersCount: number;
   private card: Card;
   opts: any;
@@ -88,13 +84,24 @@ export class Deck {
     return {deck: this.deck, config: this.opts};
   }
 
-  createDeck(card: Card): CardInterface[] {
-    let deck: CardInterface[] = [];
-    let createdCard: CardInterface;
+  /**
+   *
+   * @param card Instance of Card class used to create each card
+   * @returns array Array of CardObject objects
+   */
+
+  createDeck(card: Card): CardObject[] {
+    let deck: CardObject[] = [];
+    let createdCard: CardObject;
 
     for (const suit in this.cardSuits) {
       for (const value in this.cardValues) {
-        createdCard = card.createCard(suit, value);
+        createdCard = card.createCard(
+          suit,
+          value,
+          this.cardSuits,
+          this.cardValues,
+        );
         deck.push(createdCard);
       }
     }
@@ -110,10 +117,7 @@ export class Deck {
    *
    * @return array The shuffled deck of cards
    */
-  private shuffleDeck(
-    timesShuffled: number,
-    deck: CardInterface[],
-  ): CardInterface[] {
+  private shuffleDeck(timesShuffled: number, deck: CardObject[]): CardObject[] {
     let n = timesShuffled;
 
     if (!n) n = 5;

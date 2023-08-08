@@ -1,19 +1,31 @@
+import chalk from 'chalk';
 import prompts from 'prompts';
 import {Player} from './Player';
-import {CardInterface, DeckObject, PlayerInterface} from './types/deck.types';
+import {
+  CardObject,
+  DeckObject,
+  DiscardedCardObject,
+  PlayerObject,
+} from './types/deck.types';
 import {chalkLog} from './utils/log.utils';
-import chalk from 'chalk';
 
+/**
+ * @class Game handles the creation/start of the game.
+ * Also responsible for instantiating the players and
+ * passing out the cards to each player.
+ */
 export class Game {
   private turnOrder: number[];
   private gameInProgress: boolean;
   private whoGoesFirst: number;
-  private shuffledDeck: CardInterface[];
+  private shuffledDeck: CardObject[];
   private playersCount: number;
-  private players: PlayerInterface[];
+  private players: PlayerObject[];
   private deckCount: number;
-  private playedCardsPile: CardInterface[];
+  private playedCardsPile: DiscardedCardObject[];
   private gameOver: boolean;
+  private whoHasPower: number | null = null;
+  private turnNumber: number;
   constructor(private deck: DeckObject, private player: Player) {
     this.gameOver = false;
     this.shuffledDeck = this.deck.deck;
@@ -21,9 +33,17 @@ export class Game {
     this.playersCount = this.deck.config.playersCount!;
     this.players = [];
     this.playedCardsPile = [];
+    this.turnNumber = 1;
   }
 
-  public start() {
+  /**
+   * Method that starts the game.
+   *
+   * Instantiates the players,
+   * passes out the cards,
+   * and begins the game.
+   */
+  public start(): void {
     /* This is on setTimeout to offset for cli spinners in Deck.ts */
     setTimeout(() => {
       // Instantiate players
@@ -40,12 +60,22 @@ export class Game {
       this.gameInProgress = true;
       // Begin game
       this.beginGameFlow();
-    }, 5000);
+    }, 4750);
   }
 
-  private takeTurn(player: number) {
-    console.log(chalk.green(`It is now player ${player + 1}\'s turn `));
-    const hand = this._showPlayersHand(player);
+  private async takeTurn(player: number) {
+    console.log(
+      chalk.green(
+        `It is now player ${player + 1}\'s turn -- Turn-${this.turnNumber}`,
+      ),
+    );
+    const hand = this._convertHandToPrompts(player);
+    // Add the option to pass
+    hand?.push({
+      title: 'Pass',
+      value: null,
+    });
+    // Create prompt with your hand
     const prompt = prompts({
       type: 'multiselect',
       name: `player-${player + 1}-turn`,
@@ -56,19 +86,19 @@ export class Game {
     return prompt;
   }
 
-  public beginGameFlow() {
+  public async beginGameFlow() {
     let currentPlayer: number = this.whoGoesFirst;
     while (this.gameInProgress) {
       currentPlayer = this.turnOrder[0];
       if (currentPlayer === this.turnOrder[0]) {
-        this.takeTurn(currentPlayer);
+        await this.takeTurn(currentPlayer);
         this.turnOrder.push(this.turnOrder.shift()!);
-        continue;
-      }
+        if (this.gameOver) {
+          // TODO
+          break;
+        }
 
-      if (this.gameOver) {
-        // TODO
-        break;
+        this.turnNumber++;
       }
     }
   }
@@ -79,7 +109,7 @@ export class Game {
    *
    * @param players The PlayerInterface array of players
    */
-  private _orderHand(players: PlayerInterface[]): void {
+  private _orderHand(players: PlayerObject[]): void {
     for (let x = 0; x < players.length; x++) {
       players[x].hand.sort();
     }
@@ -93,7 +123,7 @@ export class Game {
    * @returns array prompts.Choice object - prompts requires
    * a title and value so we return it that way.
    */
-  private _showPlayersHand(current: number): prompts.Choice[] | undefined {
+  private _convertHandToPrompts(current: number): prompts.Choice[] | undefined {
     const player = this.players.find(p => p.player === current);
     return player?.hand.map(x => {
       return {
@@ -112,7 +142,7 @@ export class Game {
   private _whoGoesFirst(): number {
     let player = this.players.find(player => {
       let thisOne = player.hand.find(
-        card => card.suit === 'D' && card.value === '2',
+        card => card.suit === 'D' && card.rank === '2',
       );
       return thisOne;
     });
@@ -121,8 +151,18 @@ export class Game {
   }
 
   /**
-   * Sets the turn order based on who
-   * had the 2 of Diamonds
+   * Helper func used to set the turn order.
+   *
+   * To start the game the turn order is
+   * determined by who has the 2 of diamonds.
+   *
+   * The turn order has the potential to change
+   * after every one has a turn depending on
+   * who won control.
+   *
+   * @param whoStarts number Index of player to start the turn
+   *
+   * @returns void
    */
   private _setTurnOrder(whoStarts: number): void {
     switch (whoStarts + 1) {
@@ -144,8 +184,19 @@ export class Game {
     }
   }
 
+  /**
+   *
+   * Helper func that takes the shuffled deck and
+   * passes out the cards among each player.
+   *
+   * @param shuffledDeck Array of shuffled CardObjects
+   * @param deckCount Number of decks used. Default: 1
+   * @param playersCount Number of players in current game
+   *
+   * @returns void
+   */
   private _passOutCards(
-    shuffledDeck: CardInterface[],
+    shuffledDeck: CardObject[],
     deckCount: number = 1,
     playersCount: number,
   ): void {

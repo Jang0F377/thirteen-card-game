@@ -20,7 +20,7 @@ function main() {
   const card = new Card();
   // Will instantiate and shuffle a deck
   const deck = new Deck(options, card).init();
-  // Create new Game and assign to game
+  // Create new Game and pass in deck and player
   game = new Game(deck, player);
   // Start the game
   game.start();

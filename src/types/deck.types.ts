@@ -6,21 +6,26 @@ export interface DeckCreationOptions {
   playersCount?: number;
 }
 
-export interface CardInterface {
-  value: string;
-  valueString: string;
+export interface CardObject {
+  rank: string;
+  rankString: string;
   suit: string;
   suitString: string;
   fullName: string;
+  comparableValue: number[];
   cardUrl?: string;
 }
 
-export interface PlayerInterface {
+export interface DiscardedCardObject extends CardObject {
+  playedBy: number;
+}
+
+export interface PlayerObject {
   player: number;
-  hand: CardInterface[];
+  hand: CardObject[];
 }
 
 export interface DeckObject {
-  deck: CardInterface[];
+  deck: CardObject[];
   config: DeckCreationOptions;
 }
