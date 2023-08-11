@@ -38,6 +38,16 @@ export class Card {
     let suitValue: number;
     let rankValue: number;
 
+    /**
+     * SUIT ORDER:
+     *  --weakest to strongest--
+     *
+     * 1. DIAMONDS
+     * 2. Clubs
+     * 3. Hearts
+     * 4. Spades
+     *
+     **/
     if (suit === 'D') {
       suitValue = 1;
     } else if (suit === 'C') {

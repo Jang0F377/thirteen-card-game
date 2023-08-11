@@ -45,7 +45,7 @@ export class Game {
    */
   public start(): void {
     /* This is on setTimeout to offset for cli spinners in Deck.ts */
-    setTimeout(() => {
+    setTimeout(async () => {
       // Instantiate players
       this.player.initPlayers(this.playersCount, this.players);
       // Pass out the cards
@@ -55,7 +55,7 @@ export class Game {
       // Set turn order based on whoStarts
       this._setTurnOrder(whoStarts);
       // Sort players hands
-      this._orderHand(this.players);
+      await this._orderHand(this.players);
       // Set gameInProgress
       this.gameInProgress = true;
       // Begin game
@@ -91,6 +91,7 @@ export class Game {
     while (this.gameInProgress) {
       currentPlayer = this.turnOrder[0];
       if (currentPlayer === this.turnOrder[0]) {
+        this.gameInProgress = false;
         await this.takeTurn(currentPlayer);
         this.turnOrder.push(this.turnOrder.shift()!);
         if (this.gameOver) {
@@ -109,9 +110,14 @@ export class Game {
    *
    * @param players The PlayerInterface array of players
    */
-  private _orderHand(players: PlayerObject[]): void {
+  private async _orderHand(players: PlayerObject[]): Promise<void> {
     for (let x = 0; x < players.length; x++) {
-      players[x].hand.sort();
+      players[x].hand.sort((a, b) => {
+        return a.comparableValue[0] - b.comparableValue[0];
+      });
+      players[x].hand.sort((a, b) => {
+        return a.comparableValue[1] - b.comparableValue[1];
+      });
     }
   }
 

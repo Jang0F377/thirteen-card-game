@@ -29,3 +29,11 @@ export interface DeckObject {
   deck: CardObject[];
   config: DeckCreationOptions;
 }
+
+export interface GameState {
+  playersState: PlayerObject[];
+  currentTurnOrder: number[];
+  inProgress: boolean;
+  placementOutcome: number[];
+  turnNumber: number;
+}
