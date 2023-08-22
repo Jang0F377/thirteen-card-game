@@ -27,3 +27,14 @@ function main() {
 }
 
 main();
+
+process.on('SIGINT', function () {
+  console.log('Caught SIGINT signal');
+
+  process.exit(1);
+});
+process.on('SIGTERM', function () {
+  console.log('Caught SIGTERM signal');
+
+  process.exit(1);
+});

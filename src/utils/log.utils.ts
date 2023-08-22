@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import ora, {Color, Ora} from 'ora';
 import {type SpinnerName} from 'cli-spinners';
+import {createWriteStream} from 'fs';
 
 interface ChalkLogInterface {
   color: Color;
@@ -68,4 +69,9 @@ export function spinnerLog(props: SpinnerLogInterface): Ora {
   });
 
   return spinner.start();
+}
+
+export async function writeToLog(chunk: any) {
+  const writeToLog = createWriteStream('./output.log', {flags: 'a'});
+  writeToLog.write(JSON.stringify(chunk));
 }
