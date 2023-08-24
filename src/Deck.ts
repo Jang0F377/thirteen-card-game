@@ -19,7 +19,7 @@ export class Deck {
   deck: CardObject[];
   playersCount: number;
   private card: Card;
-  opts: any;
+  opts: DeckCreationOptions;
 
   constructor(options: DeckCreationOptions, card: Card) {
     if (!options.useJokers) delete options.jokerCount;
@@ -91,7 +91,7 @@ export class Deck {
    */
 
   createDeck(card: Card): CardObject[] {
-    let deck: CardObject[] = [];
+    const deck: CardObject[] = [];
     let createdCard: CardObject;
 
     for (const suit in this.cardSuits) {

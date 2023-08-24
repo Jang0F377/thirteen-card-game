@@ -72,7 +72,7 @@ export class Game {
       // Set turnNumber to 1 as game starts
       this.gameState.turnNumber = 1;
       // Begin game
-      this.beginGameFlow();
+      await this.beginGameFlow();
     }, 4750);
   }
 
@@ -182,8 +182,8 @@ export class Game {
    * @returns number Index of the player with 2 of D
    */
   private _whoGoesFirst(): number {
-    let player = this.gameState.playersState.find(player => {
-      let thisOne = player.hand.find(
+    const player = this.gameState.playersState.find(p => {
+      const thisOne = p.hand.find(
         card => card.suit === 'D' && card.rank === '2',
       );
       return thisOne;
@@ -239,10 +239,10 @@ export class Game {
    */
   private _passOutCards(
     shuffledDeck: CardObject[],
-    deckCount: number = 1,
+    deckCount = 1,
     playersCount: number,
   ): void {
-    let cardCount = deckCount * 52;
+    const cardCount = deckCount * 52;
     const cardsPerPlayer = cardCount / playersCount;
     for (let x = 0; x <= cardsPerPlayer - 1; x++) {
       this.gameState.playersState.forEach(function (player, _idx, _arr) {
@@ -318,7 +318,7 @@ export class Game {
 
   private _validateChoices(choices: number[], currentPlayer: number) {
     // Setup empty array for chosen cards
-    let discardedCards: DiscardedCardObject[] = [];
+    const discardedCards: DiscardedCardObject[] = [];
     const len = choices.length - 1;
     // Get the players hand
     const hand = this.gameState.playersState[currentPlayer].hand;
@@ -331,7 +331,7 @@ export class Game {
      *
      **/
     for (let x = len; x >= 0; x--) {
-      let thisOne = choices[x];
+      const thisOne = choices[x];
       // Add properties for discarded cards and push to local discardedCards
       const discarded: DiscardedCardObject = {
         ...hand[thisOne],
