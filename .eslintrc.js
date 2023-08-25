@@ -5,5 +5,6 @@ module.exports = {
     '@typescript-eslint/prefer-for-of': 'warn',
     'prefer-const': 'warn',
     '@typescript-eslint/no-misused-promises': 'warn',
+    '@typescript-eslint/no-explicit-any': 'warn',
   },
 };

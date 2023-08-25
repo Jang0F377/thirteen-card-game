@@ -48,6 +48,7 @@ export class Game {
   }
 
   /**
+   *
    * Method that starts the game.
    *
    * Instantiates the players,
@@ -116,7 +117,7 @@ export class Game {
         const res = await this.takeTurn(currentPlayer);
 
         // Handle validating choices and setting global state
-        this._validateChoices(
+        this._validation(
           res[`player-${currentPlayer + 1}-turn`],
           currentPlayer,
         );
@@ -137,8 +138,6 @@ export class Game {
       }
     }
   }
-
-  private _sortResponse() {}
 
   /**
    *
@@ -316,7 +315,7 @@ export class Game {
     }
   }
 
-  private _validateChoices(choices: number[], currentPlayer: number) {
+  private _validation(choices: number[], currentPlayer: number) {
     // Setup empty array for chosen cards
     const discardedCards: DiscardedCardObject[] = [];
     const len = choices.length - 1;
@@ -357,7 +356,24 @@ export class Game {
     console.log('STATE', this.gameState);
   }
 
+  private _validatePlayedCards(playedCards: DiscardedCardObject[]) {
+    // Get current state we are going to need
+    const howManyCards = this.gameState.currentTurnState.howManyCards;
+    const lastCard = this.gameState.currentTurnState.lastCard;
+    const lastCardComparableValue = lastCard?.comparableValue;
+    const playedLength = playedCards.length;
+
+    /**
+     *
+     * Steps for validating:
+     * 1. Does it match current turn state ie: how many cards & play type
+     * 2. Does it beat currentTurnState.lastCard.comparableValue
+     * 3.
+     */
+  }
+
   /**
+   *
    * helper function to sort arrays of CardObjects
    * @param values array of CardObject objects
    * @returns array of CardObjects sorted by rank then suit
